@@ -1,0 +1,7 @@
+bundle: kubernetes
+applications:
+  mysql:
+    charm: ch:mysql-k8s
+    channel: edge
+    scale: 1
+    trust: false

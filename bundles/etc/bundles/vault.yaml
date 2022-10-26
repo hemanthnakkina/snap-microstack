@@ -1,0 +1,6 @@
+bundle: kubernetes
+applications:
+  vault:
+    charm: ch:icey-vault-k8s
+    channel: stable
+    scale: 1

@@ -1,0 +1,21 @@
+bundle: kubernetes
+applications:
+  nova:
+    charm: ch:nova-k8s
+    channel: edge
+    scale: 1
+    trust: true
+
+relations:
+- - mysql:database
+  - nova:database
+- - mysql:database
+  - nova:api-database
+- - mysql:database
+  - nova:cell-database
+- - rabbitmq:amqp
+  - nova:amqp
+- - keystone:identity-service
+  - nova:identity-service
+- - traefik:ingress
+  - nova:ingress-public

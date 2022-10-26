@@ -1,0 +1,23 @@
+bundle: kubernetes
+applications:
+  neutron:
+    charm: ch:neutron-k8s
+    channel: edge
+    scale: 1
+    trust: true
+    options:
+      os-public-hostname:
+
+relations:
+- - mysql:database
+  - neutron:database
+- - rabbitmq:amqp
+  - neutron:amqp
+- - keystone:identity-service
+  - neutron:identity-service
+- - traefik:ingress
+  - neutron:ingress-public
+- - vault:insecure-certificates
+  - neutron:certificates
+- - neutron:ovsdb-cms
+  - ovn-central:ovsdb-cms

@@ -1,0 +1,11 @@
+bundle: kubernetes
+applications:
+  rabbitmq:
+    charm: ch:rabbitmq-k8s
+    channel: edge
+    scale: 1
+    trust: true
+
+relations:
+- - traefik:ingress
+  - rabbitmq:ingress

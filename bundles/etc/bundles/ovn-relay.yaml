@@ -1,0 +1,11 @@
+bundle: kubernetes
+applications:
+  ovn-relay:
+    charm: ch:ovn-relay-k8s
+    channel: edge
+    scale: 1
+    trust: true
+
+relations:
+- - vault:insecure-certificates
+  - ovn-relay:certificates

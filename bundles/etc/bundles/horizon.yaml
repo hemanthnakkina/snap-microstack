@@ -1,0 +1,15 @@
+bundle: kubernetes
+applications:
+  horizon:
+    charm: ch:horizon-k8s
+    channel: edge
+    scale: 1
+    trust: true
+
+relations:
+- - mysql:database
+  - horizon:database
+- - keystone:identity-credentials
+  - horizon:cloud-credentials
+- - traefik:ingress
+  - horizon:ingress-public

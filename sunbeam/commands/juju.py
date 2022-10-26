@@ -138,6 +138,23 @@ class JujuHelper:
         finally:
             await controller.disconnect()
 
+    async def deploy_or_refresh_apps(model: str, app_yamls: dict) -> bool:
+        """Deploy or refresh applications"""
+        JujuHelper._update_juju_data_env()
+        controller = Controller()
+        await controller.connect()
+
+        try:
+            # Get the reference to the specified model
+            model = await controller.get_model(model)
+
+            return True
+        except Exception as e:
+            LOG.error(f"Error in deploying bundle: {str(e)}")
+            return False
+        finally:
+            await controller.disconnect()
+
     async def run_action(app: str, action_name: str, action_params: dict = {}) -> dict:
         """Run actions on leader unit
 

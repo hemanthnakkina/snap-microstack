@@ -1,0 +1,19 @@
+bundle: kubernetes
+applications:
+  glance:
+    charm: ch:glance-k8s
+    channel: edge
+    scale: 1
+    trust: true
+    storage:
+      local-repository: 5G
+
+relations:
+- - mysql:database
+  - glance:database
+- - rabbitmq:amqp
+  - glance:amqp
+- - keystone:identity-service
+  - glance:identity-service
+- - traefik:ingress
+  - glance:ingress-public

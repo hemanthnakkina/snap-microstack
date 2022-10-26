@@ -1,0 +1,11 @@
+bundle: kubernetes
+applications:
+  ovn-central:
+    charm: ch:ovn-central-k8s
+    channel: edge
+    scale: 1
+    trust: true
+
+relations:
+- - vault:insecure-certificates
+  - ovn-central:certificates

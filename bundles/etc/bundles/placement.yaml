@@ -1,0 +1,15 @@
+bundle: kubernetes
+applications:
+  placement:
+    charm: ch:placement-k8s
+    channel: edge
+    scale: 1
+    trust: true
+
+relations:
+- - mysql:database
+  - placement:database
+- - keystone:identity-service
+  - placement:identity-service
+- - traefik:ingress
+  - placement:ingress-public
