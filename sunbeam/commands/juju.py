@@ -361,6 +361,7 @@ class BootstrapJujuStep(BaseStep, JujuStepHelper):
                 "Error determining whether to skip the bootstrap "
                 "process. Defaulting to not skip."
             )
+            LOG.info(str(e))
             LOG.debug(str(e))
             return False
 

@@ -19,7 +19,8 @@ import os
 import socket
 import typing
 
-from netifaces import AF_INET, ifaddresses, interfaces
+import netifaces
+# from netifaces import AF_INET, ifaddresses, interfaces
 from semver import VersionInfo
 from snaphelpers import Snap
 
@@ -99,10 +100,10 @@ def get_fqdn() -> str:
 def get_local_ip_addresses() -> typing.List:
     """Get IP addresses of the local host."""
     addresses = []
-    for ifaceName in interfaces():
+    for ifaceName in netifaces.interfaces():
         address = [
             i["addr"]
-            for i in ifaddresses(ifaceName).setdefault(AF_INET, [])
+            for i in netifaces.ifaddresses(ifaceName).setdefault(netifaces.AF_INET, [])
             if "addr" in i
         ]
         addresses.extend(address)
@@ -119,10 +120,10 @@ def get_local_ip_by_default_route() -> str:
     ip = "127.0.0.1"
 
     # TOCHK: Gathering only IPv4
-    if "default" in gateways():
-        interface = gateways()["default"][AF_INET][1]
+    if "default" in netifaces.gateways():
+        interface = netifaces.gateways()["default"][netifaces.AF_INET][1]
 
-    ip_list = ifaddresses(interface)[AF_INET]
+    ip_list = netifaces.ifaddresses(interface)[netifaces.AF_INET]
     if len(ip_list) > 0 and "addr" in ip_list[0]:
         ip = ip_list[0]["addr"]
 

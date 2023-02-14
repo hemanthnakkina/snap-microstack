@@ -25,6 +25,9 @@ from snaphelpers import Snap
 from sunbeam import utils
 from sunbeam.commands import juju, ohv
 from sunbeam.commands.init import Role
+from sunbeam.commands.clusterd import (
+    ClusterInitStep,
+)
 from sunbeam.commands.terraform import (
     TerraformException,
     TerraformHelper,
@@ -152,6 +155,7 @@ def bootstrap() -> None:
     if node_role.is_control_node():
         plan.append(juju.BootstrapJujuStep(cloud=cloud))
         plan.append(TerraformInitStep(tfhelper=tfhelper))
+        plan.append(ClusterInitStep())
         plan.append(
             DeployControlPlaneStep(
                 jhelper=jhelper, tfhelper=tfhelper, model=model, cloud=cloud

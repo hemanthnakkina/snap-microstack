@@ -22,6 +22,7 @@ from sunbeam.commands import bootstrap as bootstrap_cmds
 from sunbeam.commands import configure as configure_cmds
 from sunbeam.commands import inspect as inspect_cmds
 from sunbeam.commands import install_script as install_script_cmds
+from sunbeam.commands import node as node_cmds
 from sunbeam.commands import openrc as openrc_cmds
 from sunbeam.commands import reset as reset_cmds
 from sunbeam.commands import status as status_cmds
@@ -49,6 +50,8 @@ def cli(ctx, quiet, verbose):
 def main():
     log.setup_root_logging()
     cli.add_command(bootstrap_cmds.bootstrap)
+    cli.add_command(node_cmds.add_node)
+    cli.add_command(node_cmds.join_node)
     cli.add_command(reset_cmds.reset)
     cli.add_command(status_cmds.status)
     cli.add_command(openrc_cmds.openrc)

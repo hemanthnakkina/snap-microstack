@@ -17,6 +17,17 @@ layout:
     symlink: $SNAP_DATA/terraform-plugins
 
 apps:
+  clusterd:
+    command: commands/clusterd.start
+    restart-condition: on-failure
+    daemon: simple
+    plugs:
+      - network
+      - network-bind
+    sockets:
+      unix:
+        listen-stream: $SNAP_COMMON/state/control.socket
+        socket-mode: 0666
   microstack:
     command: bin/microstack
     plugs:
@@ -92,6 +103,79 @@ parts:
       $SNAPCRAFT_STAGE/bin/terraform init
       $SNAPCRAFT_STAGE/bin/terraform providers mirror $SNAPCRAFT_STAGE/terraform-providers
       rm -rf $SNAPCRAFT_PART_INSTALL/.terraform
+
+  dqlite:
+    build-attributes: [core22-step-dependencies]
+    after:
+      - raft
+    source: https://github.com/canonical/dqlite
+    source-type: git
+    source-depth: 1
+    plugin: autotools
+    autotools-configure-parameters:
+      - --prefix=
+    stage-packages:
+      - libuv1
+      - libsqlite3-0
+    build-packages:
+      - libuv1-dev
+      - libsqlite3-dev
+      - pkg-config
+    organize:
+      usr/lib/: lib/
+    prime:
+      - lib/libdqlite*so*
+      - lib/*/libuv*
+
+  raft:
+    build-attributes: [core22-step-dependencies]
+    source: https://github.com/canonical/raft
+    source-type: git
+    source-depth: 1
+    plugin: autotools
+    autotools-configure-parameters:
+      - --prefix=
+    stage-packages:
+      - libuv1
+      - liblz4-1
+    build-packages:
+      - libuv1-dev
+      - liblz4-dev
+      - pkg-config
+    organize:
+      usr/lib/: lib/
+    prime:
+      - lib/libraft*so*
+      - lib/*/libuv.so*
+
+  microstack-cluster:
+    after:
+      - dqlite
+    plugin: go
+    source: https://github.com/hemanthnakkina/microstack-cluster
+    source-depth: 1
+    source-type: git
+    build-snaps:
+      - go
+    build-environment:
+#      - CGO_ENABLED: "0"
+      - GOFLAGS: "-mod=readonly"
+    override-build: |
+      set -ex
+
+      # Setup build environment
+      export CGO_CFLAGS="-I${SNAPCRAFT_STAGE}/include/ -I${SNAPCRAFT_STAGE}/usr/local/include/"
+      export CGO_LDFLAGS="-L${SNAPCRAFT_STAGE}/lib/ -L${SNAPCRAFT_STAGE}/usr/local/lib/"
+      export CGO_LDFLAGS_ALLOW="(-Wl,-wrap,pthread_create)|(-Wl,-z,now)"
+
+      # Build the binaries
+      go build -o "${SNAPCRAFT_PART_INSTALL}/bin/microstackd" -tags=libsqlite3 ./cmd/microstackd
+    prime:
+      - bin/microstackd
+
+  wrappers:
+    plugin: dump
+    source: snapcraft/
 
 plugs:
   # Needed for juju client to autodiscover microk8s cloud
